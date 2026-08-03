@@ -1,0 +1,96 @@
+[gd_scene format=3 uid="uid://bff1llwhaosly"]
+
+[ext_resource type="Texture2D" uid="uid://docwv2ke0xjwc" path="res://assets/2d_animation_frog_spritesheet.png" id="1_glpr6"]
+[ext_resource type="Script" uid="uid://2ckcl1jgd80y" path="res://scripts/character.gd" id="1_rkhd4"]
+[ext_resource type="Material" uid="uid://cp3lj2wn4kgib" path="res://materials/jitter_outline_material.tres" id="2_lrhn5"]
+[ext_resource type="Script" path="res://scripts/shader_animated_sprite_3d.gd" id="3_shader_sprite"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pjt0s"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(0, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wa5vi"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(64, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wfnr8"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(128, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_px5sl"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(192, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0qfo5"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yxww1"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wdpcj"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qi5as"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lc0d1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pjt0s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wa5vi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wfnr8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_px5sl")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0qfo5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yxww1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wdpcj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qi5as")
+}],
+"loop": 1,
+"name": &"jump",
+"speed": 12.0
+}]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_lc0d1"]
+radius = 0.3
+height = 0.8
+
+[node name="Character" type="CharacterBody3D" unique_id=1645011054 groups=["player"]]
+collision_layer = 2
+script = ExtResource("1_rkhd4")
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=1916334189]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32907706, 0)
+material_override = ExtResource("2_lrhn5")
+alpha_cut = 1
+sprite_frames = SubResource("SpriteFrames_lc0d1")
+animation = &"idle"
+frame_progress = 0.7469332
+script = ExtResource("3_shader_sprite")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1566915771]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4154182, 0)
+shape = SubResource("CapsuleShape3D_lc0d1")

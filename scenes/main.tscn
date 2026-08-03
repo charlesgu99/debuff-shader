@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://541va2r840tw"]
+
+[ext_resource type="PackedScene" uid="uid://bff1llwhaosly" path="res://scenes/character.tscn" id="1_o5qli"]
+[ext_resource type="Script" uid="uid://ckyn7ejb2in3k" path="res://scripts/camera_follow.gd" id="2_0wfyh"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_lc0d1"]
+size = Vector2(10, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_o5qli"]
+size = Vector3(10, 0.1, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sugp2"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jyhfs"]
+
+[node name="Main" type="Node3D" unique_id=376653123]
+
+[node name="Character" parent="." unique_id=1645011054 instance=ExtResource("1_o5qli")]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1729201469 node_paths=PackedStringArray("target")]
+transform = Transform3D(1, 0, 0, 0, 0.93859875, 0.34501082, 0, -0.34501082, 0.93859875, -0.06210041, 0.75455105, 1.0899259)
+script = ExtResource("2_0wfyh")
+target = NodePath("../Character")
+offset = Vector3(-0.06210041, 0.75455105, 1.0899259)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1881328380]
+transform = Transform3D(0.8260893, 0.19969974, -0.5269691, 0.35995483, 0.53250843, 0.76607287, 0.4336, -0.8225297, 0.36801663, 0, 2.5954423, 0)
+shadow_enabled = true
+
+[node name="FloorBody" type="StaticBody3D" parent="." unique_id=1513102928 groups=["obstacle"]]
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="FloorBody" unique_id=323789468]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.002380371, 0, 0.0007324219)
+mesh = SubResource("PlaneMesh_lc0d1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FloorBody" unique_id=1828965986]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
+shape = SubResource("BoxShape3D_o5qli")
+
+[node name="CubeObstacle" type="StaticBody3D" parent="." unique_id=1534645747 groups=["obstacle"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.5, -1)
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CubeObstacle" unique_id=730304164]
+mesh = SubResource("BoxMesh_sugp2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CubeObstacle" unique_id=332567585]
+shape = SubResource("BoxShape3D_jyhfs")
