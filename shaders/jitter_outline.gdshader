@@ -18,15 +18,20 @@ uniform float jitter_speed : hint_range(0.0, 20.0) = 6.0;
 uniform float block_size : hint_range(1.0, 64.0) = 10.0;
 uniform float alpha_threshold : hint_range(0.0, 1.0) = 0.1;
 
-uniform vec4 outline_color : source_color = vec4(0.2, 1.0, 0.9, 1.0);
-uniform sampler2D outline_gradient : source_color, hint_default_white;
-uniform bool use_gradient = true;
+// Outline look: one scrolling texture (solid color / gradient / pattern all via this).
+uniform sampler2D outline_texture : source_color, filter_linear, hint_default_white;
+uniform float outline_scroll_speed : hint_range(-5.0, 5.0) = 0.15;
+uniform float outline_scroll_angle : hint_range(0.0, 360.0) = 45.0;
+uniform vec2 outline_texture_scale = vec2(1.0);
 
-uniform sampler2D scrolling_texture : source_color, filter_linear, hint_default_white;
-uniform float texture_strength : hint_range(0.0, 1.0) = 0.35;
-uniform float texture_speed : hint_range(-5.0, 5.0) = 0.15;
-uniform float scroll_angle : hint_range(0.0, 360.0) = 45.0;
-uniform vec2 texture_scale = vec2(1.0);
+// Scrolling noise texture used to break the outer outline (R channel).
+uniform sampler2D edge_noise_texture : filter_linear, hint_default_black;
+uniform vec2 edge_noise_scale = vec2(1.0);
+uniform float edge_noise_speed : hint_range(0.0, 10.0) = 0.8;
+uniform float edge_noise_angle : hint_range(0.0, 360.0) = 90.0;
+uniform float edge_noise_threshold : hint_range(0.0, 1.0) = 0.55;
+// 0 = only outer rim breaks, higher = sharper falloff toward the body.
+uniform float edge_noise_power : hint_range(0.25, 4.0) = 1.5;
 
 float hash(vec2 p, float s) {
 	return fract(35.1 * sin(dot(vec3(112.3, 459.2, 753.2), vec3(p, s))));
@@ -89,19 +94,27 @@ void fragment() {
 	float outline = sample_outline(uv, thickness);
 
 	if (center.a < alpha_threshold && outline > 0.0) {
-		vec4 edge_color = outline_color;
-		if (use_gradient) {
-			float t = clamp(outline / 8.0, 0.0, 1.0);
-			edge_color = texture(outline_gradient, vec2(t, 0.0));
+		// Near body ≈ 0, outer rim ≈ 1 (noise only breaks outward).
+		float near_hits = sample_outline(uv, thickness * 0.35);
+		float outerness = 1.0 - clamp(near_hits / max(outline, 0.001), 0.0, 1.0);
+		float influence = pow(outerness, edge_noise_power);
+
+		float noise_radians = radians(edge_noise_angle);
+		vec2 noise_dir = vec2(cos(noise_radians), sin(noise_radians));
+		float dissolve = texture(
+			edge_noise_texture,
+			fract(uv / max(edge_noise_scale, vec2(0.001)) + noise_dir * edge_noise_speed * TIME)
+		).r;
+		if (mix(0.0, dissolve, influence) > edge_noise_threshold) {
+			discard;
 		}
 
-		float radians_angle = radians(scroll_angle + 180.0);
+		float radians_angle = radians(outline_scroll_angle);
 		vec2 scroll_dir = vec2(cos(radians_angle), sin(radians_angle));
-		vec4 scroll_color = texture(
-			scrolling_texture,
-			fract(uv / texture_scale + scroll_dir * texture_speed * TIME)
+		vec4 final_color = texture(
+			outline_texture,
+			fract(uv / max(outline_texture_scale, vec2(0.001)) + scroll_dir * outline_scroll_speed * TIME)
 		);
-		vec4 final_color = mix(edge_color, scroll_color, texture_strength);
 
 		ALBEDO = final_color.rgb;
 		ALPHA = final_color.a;

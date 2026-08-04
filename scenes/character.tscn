@@ -2,8 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://docwv2ke0xjwc" path="res://assets/2d_animation_frog_spritesheet.png" id="1_glpr6"]
 [ext_resource type="Script" uid="uid://2ckcl1jgd80y" path="res://scripts/character.gd" id="1_rkhd4"]
-[ext_resource type="Material" uid="uid://cp3lj2wn4kgib" path="res://materials/jitter_outline_material.tres" id="2_lrhn5"]
-[ext_resource type="Script" path="res://scripts/shader_animated_sprite_3d.gd" id="3_shader_sprite"]
+[ext_resource type="Material" uid="uid://bq7ignitedmat01" path="res://materials/ignited.tres" id="2_ignited"]
+[ext_resource type="Script" uid="uid://daj5tpoqrv1pc" path="res://scripts/shader_animated_sprite_3d.gd" id="3_shader_sprite"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pjt0s"]
 atlas = ExtResource("1_glpr6")
@@ -84,7 +84,7 @@ script = ExtResource("1_rkhd4")
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=1916334189]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32907706, 0)
-material_override = ExtResource("2_lrhn5")
+material_override = ExtResource("2_ignited")
 alpha_cut = 1
 sprite_frames = SubResource("SpriteFrames_lc0d1")
 animation = &"idle"

@@ -1,19 +1,12 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://cp3lj2wn4kgib"]
 
-[ext_resource type="Shader" path="res://shaders/jitter_outline.gdshader" id="1_akcin"]
-
-[sub_resource type="Gradient" id="Gradient_267w4"]
-colors = PackedColorArray(1, 0.2, 0.85, 1, 0.2, 1, 0.9, 1)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_c3072"]
-gradient = SubResource("Gradient_267w4")
-width = 64
+[ext_resource type="Shader" uid="uid://crik0q1v1slcg" path="res://shaders/jitter_outline.gdshader" id="1_akcin"]
 
 [sub_resource type="Gradient" id="Gradient_1yyx5"]
 offsets = PackedFloat32Array(0, 0.5, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0.3, 0.9, 1, 1, 1, 1, 1, 1)
+colors = PackedColorArray(0.2, 1, 0.9, 1, 0.3, 0.9, 1, 1, 1, 0.2, 0.85, 1)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_iscgw"]
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_outline"]
 gradient = SubResource("Gradient_1yyx5")
 fill_to = Vector2(1, 1)
 
@@ -28,11 +21,12 @@ shader_parameter/outline_jitter = 0.01
 shader_parameter/jitter_speed = 6.0
 shader_parameter/block_size = 10.0
 shader_parameter/alpha_threshold = 0.1
-shader_parameter/outline_color = Color(0.2, 1, 0.9, 1)
-shader_parameter/outline_gradient = SubResource("GradientTexture1D_c3072")
-shader_parameter/use_gradient = true
-shader_parameter/scrolling_texture = SubResource("GradientTexture2D_iscgw")
-shader_parameter/texture_strength = 0.35
-shader_parameter/texture_speed = 0.15
-shader_parameter/scroll_angle = 45.0
-shader_parameter/texture_scale = Vector2(1, 1)
+shader_parameter/outline_texture = SubResource("GradientTexture2D_outline")
+shader_parameter/outline_scroll_speed = 0.15
+shader_parameter/outline_scroll_angle = 45.0
+shader_parameter/outline_texture_scale = Vector2(1, 1)
+shader_parameter/edge_noise_scale = Vector2(1, 1)
+shader_parameter/edge_noise_speed = 0.8
+shader_parameter/edge_noise_angle = 90.0
+shader_parameter/edge_noise_threshold = 0.55
+shader_parameter/edge_noise_power = 1.5
