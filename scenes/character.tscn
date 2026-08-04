@@ -2,10 +2,50 @@
 
 [ext_resource type="Texture2D" uid="uid://docwv2ke0xjwc" path="res://assets/2d_animation_frog_spritesheet.png" id="1_glpr6"]
 [ext_resource type="Script" uid="uid://2ckcl1jgd80y" path="res://scripts/character.gd" id="1_rkhd4"]
-[ext_resource type="Material" uid="uid://0oq8jliloqjg" path="res://materials/ignited.tres" id="2_ignited"]
+[ext_resource type="Shader" uid="uid://crik0q1v1slcg" path="res://shaders/jitter_outline.gdshader" id="2_my7n2"]
 [ext_resource type="Script" uid="uid://daj5tpoqrv1pc" path="res://scripts/shader_animated_sprite_3d.gd" id="3_shader_sprite"]
-[ext_resource type="Texture2D" path="res://assets/particles/spark.png" id="4_spark"]
-[ext_resource type="Texture2D" path="res://assets/particles/smoke.png" id="5_smoke"]
+[ext_resource type="Texture2D" uid="uid://cg7gsq3gwkevh" path="res://assets/particles/spark.png" id="4_spark"]
+[ext_resource type="Texture2D" uid="uid://beimpjjka6mww" path="res://assets/particles/smoke.png" id="5_smoke"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_edge"]
+noise_type = 0
+seed = 100
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_edge"]
+noise = SubResource("FastNoiseLite_edge")
+seamless = true
+
+[sub_resource type="Gradient" id="Gradient_outline"]
+offsets = PackedFloat32Array(0, 0.5135135, 1)
+colors = PackedColorArray(0.8980392, 0.49411765, 0.03529412, 1, 1, 0, 0, 1, 0.8980392, 0.49411765, 0.03529412, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_outline"]
+gradient = SubResource("Gradient_outline")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0lw5n"]
+render_priority = 0
+shader = ExtResource("2_my7n2")
+shader_parameter/texture_albedo = ExtResource("1_glpr6")
+shader_parameter/albedo_texture_size = Vector2i(256, 128)
+shader_parameter/atlas_uv_min = Vector2(0, 0.5)
+shader_parameter/atlas_uv_size = Vector2(0.25, 0.5)
+shader_parameter/outline_thickness = 0.02
+shader_parameter/outline_jitter = 0.02
+shader_parameter/jitter_speed = 6.0
+shader_parameter/block_size = 10.0
+shader_parameter/alpha_threshold = 0.1
+shader_parameter/outline_texture = SubResource("GradientTexture2D_outline")
+shader_parameter/outline_scroll_speed = 0.0
+shader_parameter/outline_scroll_angle = 0.0
+shader_parameter/outline_texture_scale = Vector2(1, 1)
+shader_parameter/edge_noise_texture = SubResource("NoiseTexture2D_edge")
+shader_parameter/edge_noise_scale = Vector2(1, 1)
+shader_parameter/edge_noise_speed = 0.4
+shader_parameter/edge_noise_angle = 90.0
+shader_parameter/edge_noise_threshold = 0.25
+shader_parameter/edge_noise_power = 1.0
+shader_parameter/hit_flash = 0.0
+shader_parameter/hit_flash_color = Color(1, 0.15, 0.1, 1)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pjt0s"]
 atlas = ExtResource("1_glpr6")
@@ -88,31 +128,19 @@ colors = PackedColorArray(1, 0.95, 0.45, 1, 1, 0.7, 0.15, 0.85, 1, 0.35, 0.05, 0
 gradient = SubResource("Gradient_spark")
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_spark"]
-emission_shape = 1
-emission_sphere_radius = 0.18
+lifetime_randomness = 0.1
+emission_shape_scale = Vector3(0.3, 0.1, 0.3)
+emission_shape = 3
+emission_box_extents = Vector3(1, 1, 1)
 direction = Vector3(0, 1, 0)
-spread = 40.0
-flatness = 0.15
-initial_velocity_min = 1.8
-initial_velocity_max = 3.6
-angular_velocity_min = -180.0
-angular_velocity_max = 180.0
-gravity = Vector3(0, 0.8, 0)
-damping_min = 1.0
-damping_max = 3.0
-scale_min = 0.035
-scale_max = 0.07
+initial_velocity_min = 0.099999994
+initial_velocity_max = 1.0
+gravity = Vector3(0, 1, 0)
+damping_max = 3.0000002
+scale_min = 0.049999997
+scale_max = 0.099999994
 color = Color(1, 0.92, 0.35, 1)
 color_ramp = SubResource("GradientTexture1D_spark")
-turbulence_enabled = true
-turbulence_noise_strength = 4.5
-turbulence_noise_scale = 1.8
-turbulence_noise_speed_random = 0.4
-turbulence_noise_speed = Vector3(1.5, 2.5, 1.5)
-turbulence_influence_min = 0.35
-turbulence_influence_max = 0.85
-turbulence_initial_displacement_min = 0.0
-turbulence_initial_displacement_max = 0.1
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark"]
 transparency = 1
@@ -124,15 +152,17 @@ albedo_color = Color(1, 0.95, 0.55, 1)
 albedo_texture = ExtResource("4_spark")
 billboard_mode = 3
 billboard_keep_scale = true
-proximity_fade_enabled = false
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
 
 [sub_resource type="QuadMesh" id="QuadMesh_spark"]
 material = SubResource("StandardMaterial3D_spark")
 size = Vector2(0.12, 0.12)
 
 [sub_resource type="Gradient" id="Gradient_smoke"]
-offsets = PackedFloat32Array(0, 0.25, 1)
-colors = PackedColorArray(0.55, 0.55, 0.58, 0, 0.45, 0.45, 0.48, 0.35, 0.35, 0.35, 0.38, 0)
+offsets = PackedFloat32Array(0, 0.21806854, 0.7227414, 1)
+colors = PackedColorArray(0.54901963, 0.54901963, 0.5803922, 0, 0.98217183, 0.98218423, 0.9839079, 0.6862745, 0.8862745, 0.8862745, 0.8980392, 0.3137255, 0.34901962, 0.34901962, 0.38039216, 0)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_smoke"]
 gradient = SubResource("Gradient_smoke")
@@ -145,36 +175,31 @@ point_count = 3
 curve = SubResource("Curve_smoke_scale")
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_smoke"]
-emission_shape = 1
-emission_sphere_radius = 0.14
+emission_shape_scale = Vector3(0.3, 0.1, 0.3)
+emission_shape = 3
+emission_box_extents = Vector3(1, 1, 1)
 direction = Vector3(0, 1, 0)
-spread = 18.0
-flatness = 0.35
-initial_velocity_min = 0.25
-initial_velocity_max = 0.65
+spread = 5.0
+initial_velocity_min = 0.29999998
+initial_velocity_max = 0.7
 angular_velocity_min = -20.0
 angular_velocity_max = 20.0
-gravity = Vector3(0, 0.15, 0)
-damping_min = 0.2
-damping_max = 0.6
-scale_min = 0.18
-scale_max = 0.32
+gravity = Vector3(0, -0.1, 0)
+scale_min = 0.5
+scale_max = 2.0
 scale_curve = SubResource("CurveTexture_smoke_scale")
-color = Color(0.5, 0.5, 0.52, 1)
 color_ramp = SubResource("GradientTexture1D_smoke")
 turbulence_enabled = true
 turbulence_noise_strength = 0.8
 turbulence_noise_scale = 2.5
-turbulence_noise_speed_random = 0.15
 turbulence_noise_speed = Vector3(0.2, 0.35, 0.2)
+turbulence_noise_speed_random = 0.15
 turbulence_influence_min = 0.05
 turbulence_influence_max = 0.2
-turbulence_initial_displacement_min = 0.0
 turbulence_initial_displacement_max = 0.05
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_smoke"]
 transparency = 1
-blend_mode = 0
 cull_mode = 2
 shading_mode = 0
 vertex_color_use_as_albedo = true
@@ -182,6 +207,9 @@ albedo_color = Color(0.65, 0.65, 0.68, 0.7)
 albedo_texture = ExtResource("5_smoke")
 billboard_mode = 3
 billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
 
 [sub_resource type="QuadMesh" id="QuadMesh_smoke"]
 material = SubResource("StandardMaterial3D_smoke")
@@ -193,7 +221,7 @@ script = ExtResource("1_rkhd4")
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=1916334189]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32907706, 0)
-material_override = ExtResource("2_ignited")
+material_override = SubResource("ShaderMaterial_0lw5n")
 alpha_cut = 1
 sprite_frames = SubResource("SpriteFrames_lc0d1")
 animation = &"idle"
@@ -204,24 +232,24 @@ script = ExtResource("3_shader_sprite")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4154182, 0)
 shape = SubResource("CapsuleShape3D_lc0d1")
 
-[node name="FlameFX" type="Node3D" parent="."]
+[node name="FlameFX" type="Node3D" parent="." unique_id=1820171598]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 
-[node name="Sparks" type="GPUParticles3D" parent="FlameFX"]
-amount = 28
+[node name="Sparks" type="GPUParticles3D" parent="FlameFX" unique_id=1607317831]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17999268, 0)
+amount = 15
 lifetime = 0.35
-randomness = 0.55
-fixed_fps = 0
+randomness = 0.8
 local_coords = true
 process_material = SubResource("ParticleProcessMaterial_spark")
 draw_pass_1 = SubResource("QuadMesh_spark")
 
-[node name="Smoke" type="GPUParticles3D" parent="FlameFX"]
-amount = 8
-lifetime = 1.35
+[node name="Smoke" type="GPUParticles3D" parent="FlameFX" unique_id=775520940]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18798828, 0)
+amount = 5
 preprocess = 0.5
+speed_scale = 0.5
 randomness = 0.4
-fixed_fps = 0
 local_coords = true
 process_material = SubResource("ParticleProcessMaterial_smoke")
 draw_pass_1 = SubResource("QuadMesh_smoke")
