@@ -1,4 +1,4 @@
-[gd_resource type="ShaderMaterial" format=3 uid="uid://bq7ignitedmat01"]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://0oq8jliloqjg"]
 
 [ext_resource type="Shader" uid="uid://crik0q1v1slcg" path="res://shaders/jitter_outline.gdshader" id="1_shader"]
 [ext_resource type="Texture2D" uid="uid://docwv2ke0xjwc" path="res://assets/2d_animation_frog_spritesheet.png" id="2_albedo"]
@@ -36,7 +36,9 @@ shader_parameter/outline_scroll_angle = 0.0
 shader_parameter/outline_texture_scale = Vector2(0.2, 0.2)
 shader_parameter/edge_noise_texture = SubResource("NoiseTexture2D_edge")
 shader_parameter/edge_noise_scale = Vector2(1, 1)
-shader_parameter/edge_noise_speed = 0.2
+shader_parameter/edge_noise_speed = 0.4
 shader_parameter/edge_noise_angle = 90.0
 shader_parameter/edge_noise_threshold = 0.25
 shader_parameter/edge_noise_power = 1.0
+shader_parameter/hit_flash = 0.0
+shader_parameter/hit_flash_color = Color(1, 0.15, 0.1, 1)

@@ -1,12 +1,39 @@
 extends CharacterBody3D
 
 @export var speed: float = 4.0
+@export var hit_flash_duration: float = 0.12
 
 @onready var sprite: ShaderAnimatedSprite3D = $AnimatedSprite3D
+
+var _hit_tween: Tween
 
 
 func _ready() -> void:
 	sprite.play("idle")
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	# Temporary debug trigger for hit flash.
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
+		play_hit_flash()
+		get_viewport().set_input_as_handled()
+
+
+func play_hit_flash() -> void:
+	var mat := sprite.material_override as ShaderMaterial
+	if mat == null:
+		return
+	if _hit_tween != null:
+		_hit_tween.kill()
+	mat.set_shader_parameter("hit_flash", 1.0)
+	_hit_tween = create_tween()
+	_hit_tween.tween_method(_set_hit_flash, 1.0, 0.0, hit_flash_duration)
+
+
+func _set_hit_flash(value: float) -> void:
+	var mat := sprite.material_override as ShaderMaterial
+	if mat != null:
+		mat.set_shader_parameter("hit_flash", value)
 
 
 func _physics_process(delta: float) -> void:

@@ -20,18 +20,22 @@ uniform float alpha_threshold : hint_range(0.0, 1.0) = 0.1;
 
 // Outline look: one scrolling texture (solid color / gradient / pattern all via this).
 uniform sampler2D outline_texture : source_color, filter_linear, hint_default_white;
-uniform float outline_scroll_speed : hint_range(-5.0, 5.0) = 0.15;
-uniform float outline_scroll_angle : hint_range(0.0, 360.0) = 45.0;
-uniform vec2 outline_texture_scale = vec2(1.0);
+uniform float outline_scroll_speed : hint_range(-5.0, 5.0) = 0.0;
+uniform float outline_scroll_angle : hint_range(0.0, 360.0) = 0.0;
+uniform vec2 outline_texture_scale = vec2(0.2);
 
 // Scrolling noise texture used to break the outer outline (R channel).
 uniform sampler2D edge_noise_texture : filter_linear, hint_default_black;
 uniform vec2 edge_noise_scale = vec2(1.0);
-uniform float edge_noise_speed : hint_range(0.0, 10.0) = 0.8;
+uniform float edge_noise_speed : hint_range(0.0, 10.0) = 0.2;
 uniform float edge_noise_angle : hint_range(0.0, 360.0) = 90.0;
-uniform float edge_noise_threshold : hint_range(0.0, 1.0) = 0.55;
+uniform float edge_noise_threshold : hint_range(0.0, 1.0) = 0.25;
 // 0 = only outer rim breaks, higher = sharper falloff toward the body.
-uniform float edge_noise_power : hint_range(0.25, 4.0) = 1.5;
+uniform float edge_noise_power : hint_range(0.25, 4.0) = 1.0;
+
+// Hit feedback: driven by script (tween 1 → 0). Mixes body + outline toward hit_flash_color.
+uniform float hit_flash : hint_range(0.0, 1.0) = 0.0;
+uniform vec4 hit_flash_color : source_color = vec4(1.0, 0.15, 0.1, 1.0);
 
 float hash(vec2 p, float s) {
 	return fract(35.1 * sin(dot(vec3(112.3, 459.2, 753.2), vec3(p, s))));
@@ -53,6 +57,11 @@ bool in_frame(vec2 uv) {
 		&& uv.x <= uv_max.x && uv.y <= uv_max.y;
 }
 
+// 0..1 within the current atlas cell — stable across frame switches.
+vec2 frame_uv(vec2 uv) {
+	return (uv - atlas_uv_min) / max(atlas_uv_size, vec2(1e-5));
+}
+
 // Outside the current frame: treat as empty so outline cannot wrap into other atlas cells.
 float sample_alpha(vec2 uv) {
 	if (!in_frame(uv)) {
@@ -61,10 +70,10 @@ float sample_alpha(vec2 uv) {
 	return texture(texture_albedo, uv).a;
 }
 
-float jittered_thickness(vec2 uv) {
+float jittered_thickness(vec2 local_uv) {
 	float time_step = floor(TIME * jitter_speed);
-	float n = noise(uv * block_size, time_step);
-	n = mix(n, noise(uv * block_size * 0.5, time_step + 17.0), 0.5);
+	float n = noise(local_uv * block_size, time_step);
+	n = mix(n, noise(local_uv * block_size * 0.5, time_step + 17.0), 0.5);
 	return outline_thickness + outline_jitter * n;
 }
 
@@ -90,7 +99,8 @@ void fragment() {
 	}
 
 	vec4 center = texture(texture_albedo, uv);
-	float thickness = jittered_thickness(uv);
+	vec2 local_uv = frame_uv(uv);
+	float thickness = jittered_thickness(local_uv);
 	float outline = sample_outline(uv, thickness);
 
 	if (center.a < alpha_threshold && outline > 0.0) {
@@ -103,7 +113,7 @@ void fragment() {
 		vec2 noise_dir = vec2(cos(noise_radians), sin(noise_radians));
 		float dissolve = texture(
 			edge_noise_texture,
-			fract(uv / max(edge_noise_scale, vec2(0.001)) + noise_dir * edge_noise_speed * TIME)
+			fract(local_uv / max(edge_noise_scale, vec2(0.001)) + noise_dir * edge_noise_speed * TIME)
 		).r;
 		if (mix(0.0, dissolve, influence) > edge_noise_threshold) {
 			discard;
@@ -113,13 +123,13 @@ void fragment() {
 		vec2 scroll_dir = vec2(cos(radians_angle), sin(radians_angle));
 		vec4 final_color = texture(
 			outline_texture,
-			fract(uv / max(outline_texture_scale, vec2(0.001)) + scroll_dir * outline_scroll_speed * TIME)
+			fract(local_uv / max(outline_texture_scale, vec2(0.001)) + scroll_dir * outline_scroll_speed * TIME)
 		);
 
-		ALBEDO = final_color.rgb;
+		ALBEDO = mix(final_color.rgb, hit_flash_color.rgb, hit_flash);
 		ALPHA = final_color.a;
 	} else {
-		ALBEDO = center.rgb;
+		ALBEDO = mix(center.rgb, hit_flash_color.rgb, hit_flash);
 		ALPHA = center.a;
 	}
 

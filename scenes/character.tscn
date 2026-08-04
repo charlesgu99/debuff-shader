@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://docwv2ke0xjwc" path="res://assets/2d_animation_frog_spritesheet.png" id="1_glpr6"]
 [ext_resource type="Script" uid="uid://2ckcl1jgd80y" path="res://scripts/character.gd" id="1_rkhd4"]
-[ext_resource type="Material" uid="uid://bq7ignitedmat01" path="res://materials/ignited.tres" id="2_ignited"]
+[ext_resource type="Material" uid="uid://0oq8jliloqjg" path="res://materials/ignited.tres" id="2_ignited"]
 [ext_resource type="Script" uid="uid://daj5tpoqrv1pc" path="res://scripts/shader_animated_sprite_3d.gd" id="3_shader_sprite"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pjt0s"]
