@@ -13,7 +13,7 @@ uniform vec2 atlas_uv_size = vec2(1.0);
 // Outline width in UV space (atlas UV when used with AnimatedSprite3D).
 uniform float outline_thickness : hint_range(0.001, 0.08) = 0.02;
 // Extra jitter amount added on top of thickness.
-uniform float outline_jitter : hint_range(0.0, 0.05) = 0.01;
+uniform float outline_jitter : hint_range(0.0, 0.05) = 0.02;
 uniform float jitter_speed : hint_range(0.0, 20.0) = 6.0;
 uniform float block_size : hint_range(1.0, 64.0) = 10.0;
 uniform float alpha_threshold : hint_range(0.0, 1.0) = 0.1;
@@ -22,7 +22,7 @@ uniform float alpha_threshold : hint_range(0.0, 1.0) = 0.1;
 uniform sampler2D outline_texture : source_color, filter_linear, hint_default_white;
 uniform float outline_scroll_speed : hint_range(-5.0, 5.0) = 0.0;
 uniform float outline_scroll_angle : hint_range(0.0, 360.0) = 0.0;
-uniform vec2 outline_texture_scale = vec2(0.2);
+uniform vec2 outline_texture_scale = vec2(1.0);
 
 // Scrolling noise texture used to break the outer outline (R channel).
 uniform sampler2D edge_noise_texture : filter_linear, hint_default_black;
